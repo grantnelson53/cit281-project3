@@ -1,37 +1,97 @@
-## Welcome to GitHub Pages
+## Project 3
 
-You can use the [editor on GitHub](https://github.com/grantnelson53/cit281-project3/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+In this Project, we used our knowledge of Fastify and code modules to count coins 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Source Code
 
-### Markdown
+    // Require the Fastify framework and instantiate it
+    const fastify = require("fastify")();
+    const fs = require("fs");
+    import { coinCount } from './p3-module.js';
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+    // Handle GET verb for / route using Fastify
+    // Note use of "chain" dot notation syntax
 
-```markdown
-Syntax highlighted code block
+    fastify.get("/", (request, reply) => {
+        fs.readFile("/index.html", (err, data) => {reply.send(data)});
+      reply
+        .code(200)
+        .header("Content-Type", "text/html; charset=utf-8")
+        //.send(documents / 281 / p3 / index.html);
+        .send(__dirname + "/index.html");
+    });
 
-# Header 1
-## Header 2
-### Header 3
+    fastify.get("/coin", (request, reply) => {
+        coinCount({ denom: 5, count: 3 }, { denom: 10, count: 2 });
+        coinCount(...coins);
+        coinCount(coins);  
+        reply  
+        .code(200)
+        .header("Content-Type", "text/html; charset=utf-8")
 
-- Bulleted
-- List
+        .send(`<h2>Value of ${count} of ${denom} is ${coinValue}</h2><br /><a href="/">Home</a>`);
+    });
 
-1. Numbered
-2. List
+    fastify.get("/coins", (request, reply) => {
+      reply
+        .code(200)
+        .header("Content-Type", "text/html; charset=utf-8")
 
-**Bold** and _Italic_ and `Code` text
+        .send(`<h2>Option ${option} value is ${coinValue}</h2><br /><a href="/">Home</a>`);
+    });
 
-[Link](url) and ![Image](src)
-```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+    // Start server and listen to requests using Fastify
+    const listenIP = "localhost";
+    const listenPort = 8080;
+    fastify.listen(listenPort, listenIP, (err, address) => {
+      if (err) {
+        console.log(err);
+        process.exit(1);
+      }
+      console.log(`Server listening on ${address}`);
+    });
 
-### Jekyll Themes
+    function validDenomination(coin) {
+        const coinValues = [1, 5, 10, 25, 50, 100]
+        if (coinValues.indexOf(coin) !== -1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/grantnelson53/cit281-project3/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+    function valueFromCoinObject(obj) {
+        const denom = obj.denom;
+        const count = obj.count;
+        return (count * denom);
+    }
 
-### Support or Contact
+    const valueFromArray = (arr) => {
+        let total = arr.reduce((accumulator, current) => {
+            return (accumulator += valueFromCoinObject(current));
+        }, 0);
+        return total;
+    };
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+    export function coinCount(...coinage) {
+        return valueFromArray(coinage);
+    }
+
+    const coins = [
+        {denom: 25, count: 2},
+        {denom: 1, count: 7}
+    ];
+
+    let coinObj = 
+    {
+      denom: 25,
+      count: 3,
+    };
+
+    //console.log(validDenomination(2));
+    //console.log(validDenomination(25));
+    //console.log(valueFromCoinObject(coins[1]));
+    //console.log(valueFromArray(coins));
+    //console.log(coins[0]);
